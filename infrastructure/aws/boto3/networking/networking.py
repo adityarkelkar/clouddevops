@@ -23,3 +23,10 @@ print(f'Public Subnet: {public_subnet.id}')
 private_subnet = ec2.create_subnet(CidrBlock='10.0.2.0/24', VpcId=vpc.id, AvailabilityZone='us-east-1d')
 private_subnet.create_tags(Tags=[{"Key" : "Name", "Value" : "PrivateSubnet"}])
 print(f'Private Subnet: {private_subnet.id}')
+
+# Create a public route table and a route out to internet. Associate public subnet
+route_table = vpc.create_route_table()
+route_table.create_tags(Tags=[{"Key" : "Name", "Value" : "PublicRouteTable"}])
+route = route_table.create_route(DestinationCidrBlock='0.0.0.0/0', GatewayId=ig.id)
+route_table.associate_with_subnet(SubnetId=public_subnet.id)
+print(f'Public route table: {route_table.id}')
