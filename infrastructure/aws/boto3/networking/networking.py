@@ -1,11 +1,20 @@
 import boto3
+import sys
+import os
 
 ec2 = boto3.resource('ec2')
+args = sys.argv
+try:
+    vpcname = args[1]
+except IndexError:
+    print("Please specify the VPC name! Usage: " + os.path.basename(__file__) + " <arg1>")
+    sys.exit(1)
+
 
 # Create VPC
 vpc = ec2.create_vpc('PrepVPC', CidrBlock='10.0.0.0/16')
 vpc.wait_until_available()
-vpc.create_tags(Tags=[{"Key": "Name", "Value": "PrepVPC"}])
+vpc.create_tags(Tags=[{"Key": "Name", "Value": vpcname}])
 print(f'VPC: {vpc.id}')
 
 # Create Internet Gateway and attach to VPC
